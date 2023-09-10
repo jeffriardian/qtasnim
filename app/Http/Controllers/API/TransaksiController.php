@@ -45,4 +45,9 @@ class TransaksiController extends Controller
     {
         return $this->transaksiInterface->getTransaksiByName($nama);
     }
+
+    public function searchDate(string $date)
+    {
+        return $this->transaksiInterface->getTransaksiByDate($date);
+    }
 }

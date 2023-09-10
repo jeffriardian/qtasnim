@@ -15,4 +15,6 @@ interface TransaksiInterface
     public function deleteTransaksi($id);
 
     public function getTransaksiByName($nama);
+
+    public function getTransaksiByDate($date);
 }
