@@ -17,7 +17,7 @@ class BarangRepository implements BarangInterface
     {
         try {
             $barangs = Barang::all();
-            return $this->success("All Barang", $barangs);
+            return $this->success("Semua Barang", $barangs);
         } catch(\Exception $e) {
             return $this->error($e->getMessage(), $e->getCode());
         }

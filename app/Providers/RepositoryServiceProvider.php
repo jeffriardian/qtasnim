@@ -12,5 +12,9 @@ class RepositoryServiceProvider extends ServiceProvider
             'App\Interfaces\BarangInterface',
             'App\Repositories\BarangRepository'
         );
+        $this->app->bind(
+            'App\Interfaces\TransaksiInterface',
+            'App\Repositories\TransaksiRepository'
+        );
     }
 }
