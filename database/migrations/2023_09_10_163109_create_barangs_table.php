@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('barangs', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('id_jenis')->unsigned()->nullable()->index();
             $table->string('nama', 100);
             $table->integer('stok')->default(0);
             $table->timestamps();
