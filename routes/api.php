@@ -26,3 +26,4 @@ Route::resource('transaksi', TransaksiController::class);
 
 Route::resource('barang', BarangController::class);
 Route::resource('transaksi', TransaksiController::class);
+Route::get('/transaksi/searchName/{nama?}', [TransaksiController::class, 'searchName']);

@@ -13,4 +13,6 @@ interface TransaksiInterface
     public function requestTransaksi(TransaksiRequest $request, $id = null);
 
     public function deleteTransaksi($id);
+
+    public function getTransaksiByName($nama);
 }

@@ -40,4 +40,9 @@ class TransaksiController extends Controller
     {
         return $this->transaksiInterface->deleteTransaksi($id);
     }
+
+    public function searchName(string $nama)
+    {
+        return $this->transaksiInterface->getTransaksiByName($nama);
+    }
 }

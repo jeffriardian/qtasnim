@@ -52,6 +52,28 @@ class TransaksiRepository implements TransaksiInterface
         }
     }
 
+    public function getTransaksiByName($nama)
+    {
+        try {
+            $query = DB::table('transaksis')
+                     ->select('transaksis.id as no', 'barangs.nama as nama_barang', 'barangs.stok', 'transaksis.jumlah as jumlah_terjual', 'transaksis.tanggal as tanggal_transaksi', 'jenis.nama as jenis_barang')
+                     ->join('barangs', 'barangs.id', '=', 'transaksis.id_barang')
+                     ->join('jenis', 'jenis.id', '=', 'barangs.id_jenis')
+                     ->where('barangs.nama','LIKE','%'.$nama.'%')
+                     ->orderby('barangs.nama')
+                     ->get();
+            
+            $transaksi = json_decode($query);
+            
+            // Check the transaksi
+            if(!$transaksi) return $this->error("Data transaksi tidak ditemukan", 404);
+
+            return $this->success("Detail Transaksi", $transaksi);
+        } catch(\Exception $e) {
+            return $this->error($e->getMessage(), $e->getCode());
+        }
+    }
+
     public function requestTransaksi(TransaksiRequest $request, $id = null)
     {
         DB::beginTransaction();
