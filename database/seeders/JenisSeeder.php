@@ -8,7 +8,7 @@ use App\Models\Jenis;
 use Datetime;
 use DB;
 
-class JenisBarangSeeder extends Seeder
+class JenisSeeder extends Seeder
 {
     /**
      * Run the database seeds.
