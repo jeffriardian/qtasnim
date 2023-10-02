@@ -41,13 +41,23 @@ class TransaksiController extends Controller
         return $this->transaksiInterface->deleteTransaksi($id);
     }
 
-    public function searchName(string $nama)
+    public function orderName(string $code)
     {
-        return $this->transaksiInterface->getTransaksiByName($nama);
+        return $this->transaksiInterface->getTransaksiByName($code);
     }
 
-    public function searchDate(string $date)
+    public function orderDate(string $code)
     {
-        return $this->transaksiInterface->getTransaksiByDate($date);
+        return $this->transaksiInterface->getTransaksiByDate($code);
+    }
+
+    public function compareProduct()
+    {
+        return $this->transaksiInterface->getTransaksiByCompareProduct();
+    }
+
+    public function compareProductByDate(Request $request)
+    {
+        return $this->transaksiInterface->getTransaksiByCompareProductByDate($request);
     }
 }

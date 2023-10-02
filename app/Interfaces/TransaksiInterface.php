@@ -3,6 +3,7 @@
 namespace App\Interfaces;
 
 use App\Http\Requests\TransaksiRequest;
+use Illuminate\Http\Request;
 
 interface TransaksiInterface
 {
@@ -14,7 +15,11 @@ interface TransaksiInterface
 
     public function deleteTransaksi($id);
 
-    public function getTransaksiByName($nama);
+    public function getTransaksiByName($code);
 
-    public function getTransaksiByDate($date);
+    public function getTransaksiByDate($code);
+
+    public function getTransaksiByCompareProduct();
+
+    public function getTransaksiByCompareProductByDate(Request $request);
 }

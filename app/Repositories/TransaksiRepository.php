@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use Illuminate\Http\Request;
 use App\Http\Requests\TransaksiRequest;
 use App\Interfaces\TransaksiInterface;
 use App\Traits\ResponseAPI;
@@ -52,15 +53,18 @@ class TransaksiRepository implements TransaksiInterface
         }
     }
 
-    public function getTransaksiByName($nama)
+    public function getTransaksiByName($code)
     {
         try {
             $query = DB::table('transaksis')
                      ->select('transaksis.id as no', 'barangs.nama as nama_barang', 'barangs.stok', 'transaksis.jumlah as jumlah_terjual', 'transaksis.tanggal as tanggal_transaksi', 'jenis.nama as jenis_barang')
                      ->join('barangs', 'barangs.id', '=', 'transaksis.id_barang')
                      ->join('jenis', 'jenis.id', '=', 'barangs.id_jenis')
-                     ->where('barangs.nama','LIKE','%'.$nama.'%')
-                     ->orderby('barangs.nama')
+                     ->where('barangs.nama','LIKE','%'.$code.'%')
+                     ->orWhere('barangs.stok','LIKE','%'.$code.'%')
+                     ->orWhere('transaksis.jumlah','LIKE','%'.$code.'%')
+                     ->orWhere('jenis.nama','LIKE','%'.$code.'%')
+                     ->orderby('barangs.nama', 'DESC')
                      ->get();
             
             $transaksi = json_decode($query);
@@ -74,19 +78,21 @@ class TransaksiRepository implements TransaksiInterface
         }
     }
 
-    public function getTransaksiByDate($date)
+    public function getTransaksiByDate($code)
     {
         try {
             $query = DB::table('transaksis')
                      ->select('transaksis.id as no', 'barangs.nama as nama_barang', 'barangs.stok', 'transaksis.jumlah as jumlah_terjual', 'transaksis.tanggal as tanggal_transaksi', 'jenis.nama as jenis_barang')
                      ->join('barangs', 'barangs.id', '=', 'transaksis.id_barang')
                      ->join('jenis', 'jenis.id', '=', 'barangs.id_jenis')
-                     ->where('transaksis.tanggal','LIKE','%'.$date.'%')
-                     ->orderby('transaksis.tanggal')
+                     ->where('barangs.nama','LIKE','%'.$code.'%')
+                     ->orWhere('barangs.stok','LIKE','%'.$code.'%')
+                     ->orWhere('transaksis.jumlah','LIKE','%'.$code.'%')
+                     ->orWhere('jenis.nama','LIKE','%'.$code.'%')
+                     ->orderby('transaksis.tanggal', 'DESC')
                      ->get();
             
             $transaksi = json_decode($query);
-            
             // Check the transaksi
             if(!$transaksi) return $this->error("Data transaksi tidak ditemukan", 404);
 
@@ -94,6 +100,52 @@ class TransaksiRepository implements TransaksiInterface
         } catch(\Exception $e) {
             return $this->error($e->getMessage(), $e->getCode());
         }
+    }
+
+    public function getTransaksiByCompareProduct()
+    {
+         try {
+            $query = DB::table('transaksis')
+                     ->select(\DB::raw('jenis.nama as jenis_barang, MAX(transaksis.jumlah) AS transaksi_terbanyak, MIN(transaksis.jumlah) AS transaksi_terendah'))
+                     ->join('barangs', 'barangs.id', '=', 'transaksis.id_barang')
+                     ->join('jenis', 'jenis.id', '=', 'barangs.id_jenis')
+                     ->groupBy('jenis.nama')
+                     ->get();
+             
+             $transaksi = json_decode($query);
+             // Check the transaksi
+             if(!$transaksi) return $this->error("Data transaksi tidak ditemukan", 404);
+ 
+             return $this->success("Detail Transaksi", $transaksi);
+         } catch(\Exception $e) {
+             return $this->error($e->getMessage(), $e->getCode());
+         }
+    }
+
+    public function getTransaksiByCompareProductByDate(Request $request)
+    {
+         try {
+            $from = $request->input('start_date');
+            $to = $request->input('end_date');
+            //$from = '2021-05-12';
+            //$to = '2021-05-01';
+
+            $query = DB::table('transaksis')
+                     ->select(\DB::raw('jenis.nama as jenis_barang, MAX(transaksis.jumlah) AS transaksi_terbanyak, MIN(transaksis.jumlah) AS transaksi_terendah'))
+                     ->join('barangs', 'barangs.id', '=', 'transaksis.id_barang')
+                     ->join('jenis', 'jenis.id', '=', 'barangs.id_jenis')
+                     ->groupBy('jenis.nama')
+                     ->whereBetween('transaksis.tanggal', [$to, $from])
+                     ->get();
+             
+             $transaksi = json_decode($query);
+             // Check the transaksi
+             if(!$transaksi) return $this->error("Data transaksi tidak ditemukan", 404);
+ 
+             return $this->success("Detail Transaksi", $transaksi);
+         } catch(\Exception $e) {
+             return $this->error($e->getMessage(), $e->getCode());
+         }
     }
 
     public function requestTransaksi(TransaksiRequest $request, $id = null)
